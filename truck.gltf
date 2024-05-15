@@ -286,12 +286,6 @@
 			},
 			"name":"mat_23",
 			"pbrMetallicRoughness":{
-				"baseColorFactor":[
-					0.8004403114318848,
-					0.1191835105419159,
-					0.10664384067058563,
-					1
-				],
 				"metallicFactor":4
 			}
 		},
