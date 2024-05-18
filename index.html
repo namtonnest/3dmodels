@@ -1,3 +1,5 @@
+<br />
+<br />
 Exploring the Map:
 
 You can interact with the map by clicking and dragging to move around.
@@ -22,7 +24,7 @@ These instructions should help you navigate and utilize the features of the app 
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Location Locations</title>
+    <title>Add a 3D model with threebox</title>
     <meta
       name="viewport"
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
@@ -32,154 +34,7 @@ These instructions should help you navigate and utilize the features of the app 
       rel="stylesheet"
     />
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        font-family: 'Arial', sans-serif;
-      }
-      #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .draggable {
-        position: relative;
-        top: 10px;
-        left: 10px;
-        width: 50px;
-        height: 50px;
-        background-color: #ff0000; /* Red color for Truck */
-        color: white;
-        text-align: center;
-        line-height: 50px;
-        cursor: move;
-        font-weight: bold;
-        font-size: 10px;
-      }
-      .draggable2 {
-        position: relative;
-        top: 10px;
-        left: 10px;
-        width: 50px;
-        height: 50px;
-        background-color: #ff9900;
-        color: white;
-        text-align: center;
-        line-height: 50px;
-        cursor: move;
-        font-weight: bold;
-        font-size: 10px;
-      }
-      .draggable3 {
-        position: relative;
-        top: 10px;
-        left: 10px;
-        width: 50px;
-        height: 50px;
-        background-color: #0000ff;
-        color: white;
-        text-align: center;
-        line-height: 50px;
-        cursor: move;
-        font-weight: bold;
-        font-size: 10px;
-      }
-      .draggable4 {
-        position: relative;
-        top: 10px;
-        left: 10px;
-        width: 50px;
-        height: 50px;
-        background-color: #ffa500;
-        color: white;
-        text-align: center;
-        line-height: 50px;
-        cursor: move;
-        font-weight: bold;
-        font-size: 10px;
-      }
-      .draggable5 {
-        position: relative;
-        top: 10px;
-        left: 10px;
-        width: 50px;
-        height: 50px;
-        background-color: #8b4513; /* Brown color for Cone */
-        color: white;
-        text-align: center;
-        line-height: 50px;
-        cursor: move;
-        font-weight: bold;
-        font-size: 10px;
-      }
-      .address-bar {
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        display: flex;
-      }
-      .address-input {
-        width: 300px;
-        padding: 5px;
-        font-size: 14px;
-      }
-      .address-button {
-        padding: 5px 10px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      .navigation-bar {
-        position: absolute;
-        top: 50px; /* Adjust as needed */
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        display: flex;
-      }
-      .mapboxgl-ctrl-bottom-left {
-        position: absolute;
-        bottom: 0.1%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-      /* Style for map style buttons */
-      .map-style-buttons {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        z-index: 10;
-      }
-      .map-style-buttons button {
-        background-color: white;
-        color: black;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        margin-bottom: 5px;
-        cursor: pointer;
-      }
-      /* Style for add marker button */
-      .add-marker-button {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        z-index: 10;
-        background-color: white;
-        color: black;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        cursor: pointer;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" rel="noopener" target="_blank" href="mystyles.css">
   </head>
   <body>
     <script
@@ -194,10 +49,6 @@ These instructions should help you navigate and utilize the features of the app 
     <div class="address-bar">
       <input type="text" id="address" class="address-input" placeholder="Enter address or postal code" />
       <button id="fly-button" class="address-button">Fly to</button>
-    </div>
-    <div class="navigation-bar">
-      <input type="text" id="navigation-address" class="address-input" placeholder="Enter destination address or postal code" />
-      <button id="navigate-button" class="address-button">Navigate</button>
     </div>
     <div id="draggable-truck" class="draggable" draggable="true">Truck</div>
     <div id="draggable-craft" class="draggable2" draggable="true">Craft</div>
@@ -214,39 +65,15 @@ These instructions should help you navigate and utilize the features of the app 
     <button id="add-marker" class="add-marker-button">+</button>
     <script>
       mapboxgl.accessToken =
-      "pk.eyJ1IjoicHVycGhhY3RzIiwiYSI6ImNsdzY1bzVvNzFwb3IyamxyOG1vY3oyM2gifQ.2LikTeWKwlWsAcEneBXW0Q";
+        "pk.eyJ1IjoicHVycGhhY3RzIiwiYSI6ImNsdzY1bzVvNzFwb3IyamxyOG1vY3oyM2gifQ.2LikTeWKwlWsAcEneBXW0Q";
       const map = new mapboxgl.Map({
         container: "map",
         style: "mapbox://styles/mapbox/light-v11",
-        center: { lng: -79.3871, lat: 43.6426 },
-        zoom: 16
-      });
-
-      // Get user's current location and add a marker
-      map.on("load", () => {
-        // Add marker for the initial location
-        const initialMarker = new mapboxgl.Marker()
-          .setLngLat([-79.3871, 43.6426])
-          .addTo(map);
-
-        // Get user's current location and add a marker
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { longitude, latitude } = position.coords;
-            const userMarker = new mapboxgl.Marker({ color: "blue" }) // Change marker color to blue for the user's location
-              .setLngLat([longitude, latitude])
-              .addTo(map);
-
-            // Ensure both markers are visible by fitting the map bounds to include both markers
-            const bounds = new mapboxgl.LngLatBounds();
-            bounds.extend(initialMarker.getLngLat());
-            bounds.extend(userMarker.getLngLat());
-            map.fitBounds(bounds, { padding: 100 }); // Adjust padding as needed
-          },
-          (error) => {
-            console.error("Error getting user location:", error);
-          }
-        );
+        center: { lng: -73.97627, lat: 40.75155 },
+        zoom: 16,
+        pitch: 90,
+        bearing: 172.5,
+        antialias: true,
       });
       const tb = (window.tb = new Threebox(
         map,
@@ -264,8 +91,7 @@ These instructions should help you navigate and utilize the features of the app 
           id: "custom-threebox-model",
           type: "custom",
           renderingMode: "3d",
-          onAdd: function () {
-            const scale = 3.2;
+          onAdd: function () {const scale = 3.2;
             const options = {
               obj: "https://raw.githubusercontent.com/namtonnest/3dmodels/main/truck.gltf",
               type: "gltf",
@@ -279,7 +105,7 @@ These instructions should help you navigate and utilize the features of the app 
               model.setRotation({ x: 0, y: 0, z: 241 });
 
               model.traverse((node) => {
-                if (node.isMesh) {
+                if (node.isMesh) {                  
                   node.material = new THREE.MeshStandardMaterial({
                     color: 0xff0000, // Red color
                     roughness: 0.5,
@@ -299,9 +125,9 @@ These instructions should help you navigate and utilize the features of the app 
         // Add scale ruler
         const scale = new mapboxgl.ScaleControl({
           maxWidth: 320, // Extend by 4x
-          unit: "metric",
+          unit: 'metric'
         });
-        map.addControl(scale, "bottom-left");
+        map.addControl(scale, 'bottom-left');
       });
 
       const draggables = [
@@ -392,68 +218,39 @@ These instructions should help you navigate and utilize the features of the app 
       });
 
       document.getElementById('fly-button').addEventListener('click', () => {
-  const address = document.getElementById('address').value;
-  if (address) {
-    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}`)
-      .then(response => response.json())
-      .then(data => {
-        const [lng, lat] = data.features[0].center;
-        map.flyTo({ center: [lng, lat], essential: true, zoom: 16 });
+        const address = document.getElementById('address').value;
+        if (address) {
+          fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}`)
+            .then(response => response.json())
+            .then(data => {
+              const [lng, lat] = data.features[0].center;
+              map.flyTo({ center: [lng, lat], essential: true, zoom: 16 });
+            });
+        }
       });
-  }
-});
 
-document.getElementById('navigate-button').addEventListener('click', () => {
-  const address = document.getElementById('navigation-address').value;
-  if (address) {
-    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}`)
-      .then(response => response.json())
-      .then(data => {
-        const [lng, lat] = data.features[0].center;
-        // Implement your navigation logic here
-        // For example, you can draw a route on the map from the current location to the destination
+      // Map style buttons functionality
+      document.getElementById('satellite-button').addEventListener('click', () => {
+        map.setStyle('mapbox://styles/mapbox/satellite-v9');
       });
-  }
-});
 
-
-      document.getElementById('navigate-button').addEventListener('click', () => {
-  
-  
-        const address = document.getElementById('navigation-address').value;
-  if (address) {
-    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}`)
-      .then(response => response.json())
-      .then(data => {
-        const [lng, lat] = data.features[0].center;
-        // Implement your navigation logic here
-        // For example, you can draw a route on the map from the current location to the destination
+      document.getElementById('streets-button').addEventListener('click', () => {
+        map.setStyle('mapbox://styles/mapbox/streets-v11');
       });
-  }
-});
 
-// Map style buttons functionality
-document.getElementById('satellite-button').addEventListener('click', () => {
-  map.setStyle('mapbox://styles/mapbox/satellite-v9');
-});
+      document.getElementById('dark-button').addEventListener('click', () => {
+        map.setStyle('mapbox://styles/mapbox/dark-v10');
+      });
 
-document.getElementById('streets-button').addEventListener('click', () => {
-  map.setStyle('mapbox://styles/mapbox/streets-v11');
-});
-
-document.getElementById('dark-button').addEventListener('click', () => {
-  map.setStyle('mapbox://styles/mapbox/dark-v10');
-});
-
-// Add marker button functionality
-document.getElementById('add-marker').addEventListener('click', () => {
-  // Replace this with your marker adding logic
-  const marker = new mapboxgl.Marker()
-    .setLngLat([-73.97627, 40.75155])
-    .addTo(map);
-});
-</script>
-</body>
+      // Add marker button functionality
+      document.getElementById('add-marker').addEventListener('click', () => {
+        // Replace this with your marker adding logic
+        const marker = new mapboxgl.Marker()
+          .setLngLat([-73.97627, 40.75155])
+          .addTo(map);
+      });
+    </script>
+  </body>
 </html>
 
 
