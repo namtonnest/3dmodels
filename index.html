@@ -17,6 +17,7 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
+        font-family: 'Arial', sans-serif;
       }
       #map {
         position: absolute;
@@ -29,25 +30,126 @@
         position: relative;
         top: 10px;
         left: 10px;
-        width: 100px;
-        height: 100px;
-        background-color: #ff0000;
+        width: 50px;
+        height: 50px;
+        background-color: #ff0000; /* Red color for Truck */
         color: white;
         text-align: center;
-        line-height: 100px;
+        line-height: 50px;
         cursor: move;
+        font-weight: bold;
+        font-size: 10px;
       }
       .draggable2 {
         position: relative;
         top: 10px;
         left: 10px;
-        width: 100px;
-        height: 100px;
-        background-color: green;
+        width: 50px;
+        height: 50px;
+        background-color: #ff9900;
         color: white;
         text-align: center;
-        line-height: 100px;
+        line-height: 50px;
         cursor: move;
+        font-weight: bold;
+        font-size: 10px;
+      }
+      .draggable3 {
+        position: relative;
+        top: 10px;
+        left: 10px;
+        width: 50px;
+        height: 50px;
+        background-color: #0000ff;
+        color: white;
+        text-align: center;
+        line-height: 50px;
+        cursor: move;
+        font-weight: bold;
+        font-size: 10px;
+      }
+      .draggable4 {
+        position: relative;
+        top: 10px;
+        left: 10px;
+        width: 50px;
+        height: 50px;
+        background-color: #ffa500;
+        color: white;
+        text-align: center;
+        line-height: 50px;
+        cursor: move;
+        font-weight: bold;
+        font-size: 10px;
+      }
+      .draggable5 {
+        position: relative;
+        top: 10px;
+        left: 10px;
+        width: 50px;
+        height: 50px;
+        background-color: #8b4513; /* Brown color for Cone */
+        color: white;
+        text-align: center;
+        line-height: 50px;
+        cursor: move;
+        font-weight: bold;
+        font-size: 10px;
+      }
+      .address-bar {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+      }
+      .address-input {
+        width: 300px;
+        padding: 5px;
+        font-size: 14px;
+      }
+      .address-button {
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .mapboxgl-ctrl-bottom-left {
+        position: absolute;
+        bottom: 0.1%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      /* Style for map style buttons */
+      .map-style-buttons {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+      }
+      .map-style-buttons button {
+        background-color: white;
+        color: black;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 5px;
+        cursor: pointer;
+      }
+      /* Style for add marker button */
+      .add-marker-button {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 10;
+        background-color: white;
+        color: black;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -61,22 +163,35 @@
       rel="stylesheet"
     />
     <div id="map"></div>
+    <div class="address-bar">
+      <input type="text" id="address" class="address-input" placeholder="Enter address or postal code" />
+      <button id="fly-button" class="address-button">Fly to</button>
+    </div>
     <div id="draggable-truck" class="draggable" draggable="true">Truck</div>
     <div id="draggable-craft" class="draggable2" draggable="true">Craft</div>
+    <div id="draggable-washroom" class="draggable3" draggable="true">Washroom</div>
+    <div id="draggable-utility" class="draggable4" draggable="true">LSP</div>
+    <div id="draggable-cone" class="draggable5" draggable="true">Cone</div>
+    <!-- Map style buttons -->
+    <div class="map-style-buttons">
+      <button id="satellite-button">S</button>
+      <button id="streets-button">T</button>
+      <button id="dark-button">D</button>
+    </div>
+    <!-- Add marker button -->
+    <button id="add-marker" class="add-marker-button">+</button>
     <script>
       mapboxgl.accessToken =
         "pk.eyJ1IjoicHVycGhhY3RzIiwiYSI6ImNsdzY1bzVvNzFwb3IyamxyOG1vY3oyM2gifQ.2LikTeWKwlWsAcEneBXW0Q";
       const map = new mapboxgl.Map({
         container: "map",
-        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
         style: "mapbox://styles/mapbox/light-v11",
-        center: { lng: -73.97627, lat: 40.75400 },
-        zoom: 17,
-        pitch: 40,
-        bearing: 0,
-        antialias: true, // create the gl context with MSAA antialiasing, so custom layers are antialiased
+        center: { lng: -73.97627, lat: 40.75155 },
+        zoom: 16,
+        pitch: 90,
+        bearing: 172.5,
+        antialias: true,
       });
-
       const tb = (window.tb = new Threebox(
         map,
         map.getCanvas().getContext("webgl"),
@@ -88,13 +203,42 @@
         }
       ));
 
+      let addingMarker = false; // Flag to indicate if adding marker mode is active
+
+      // Function to add a marker
+      function addMarker(lng, lat) {
+        const marker = new mapboxgl.Marker()
+          .setLngLat([lng, lat])
+          .addTo(map);
+          
+        // Event listener to handle label when marker is clicked
+        marker.getElement().addEventListener('click', () => {
+          const label = prompt('Enter label for this marker:');
+          if (label) {
+            new mapboxgl.Popup()
+              .setLngLat(marker.getLngLat())
+              .setHTML(`<p>${label}</p>`)
+              .addTo(map);
+          }
+        });
+      }
+
+      // Toggle adding marker mode
+      document.getElementById('add-marker').addEventListener('click', () => {
+        addingMarker = !addingMarker;
+        if (addingMarker) {
+          document.getElementById('add-marker').style.backgroundColor = 'lightgreen';
+        } else {
+          document.getElementById('add-marker').style.backgroundColor = 'white';
+        }
+      });
+
       map.on("style.load", () => {
         map.addLayer({
           id: "custom-threebox-model",
           type: "custom",
           renderingMode: "3d",
-          onAdd: function () {
-            const scale = 3.2;
+          onAdd: function () {const scale = 3.2;
             const options = {
               obj: "https://raw.githubusercontent.com/namtonnest/3dmodels/main/truck.gltf",
               type: "gltf",
@@ -107,11 +251,10 @@
               model.setCoords([-73.976799, 40.754145]);
               model.setRotation({ x: 0, y: 0, z: 241 });
 
-              // Modify material properties for each mesh in the model
               model.traverse((node) => {
-                if (node.isMesh) {
+                if (node.isMesh) {                  
                   node.material = new THREE.MeshStandardMaterial({
-                    color: 0xff0000, // Set the color to red
+                    color: 0xff0000, // Red color
                     roughness: 0.5,
                     metalness: 0.5,
                   });
@@ -121,11 +264,17 @@
               tb.add(model);
             });
           },
-
           render: function () {
             tb.update();
           },
         });
+
+        // Add scale ruler
+        const scale = new mapboxgl.ScaleControl({
+          maxWidth: 320, // Extend by 4x
+          unit: 'metric'
+        });
+        map.addControl(scale, 'bottom-left');
       });
 
       const draggables = [
@@ -133,21 +282,38 @@
           elementId: "draggable-truck",
           modelUrl: "https://raw.githubusercontent.com/namtonnest/3dmodels/main/truck.gltf",
           color: 0xff0000, // Red color for truck
-          scale: { x: 3, y: 3, z: 2.7 } // Scale for truck
+          scale: { x: 3, y: 3, z: 2.7 }
         },
         {
           elementId: "draggable-craft",
           modelUrl: "https://raw.githubusercontent.com/namtonnest/3dmodels/main/FOOD%20TRUCK.gltf",
-          color: 'green', // Green color for craft
-          scale: { x: 6, y: 6, z: 5.4 } // Increased scale for craft
+          color: 0x00ff00, // Green color for craft
+          scale: { x: 6, y: 6, z: 5.4 }
+        },
+        {
+          elementId: "draggable-washroom",
+          modelUrl: "https://raw.githubusercontent.com/namtonnest/3dmodels/main/washroom_trailer.gltf",
+          color: 0x0000ff, // Blue color for washroom trailer
+          scale: { x: 5, y: 5, z: 5 }
+        },
+        {
+          elementId: "draggable-utility",
+          modelUrl: "https://raw.githubusercontent.com/namtonnest/3dmodels/main/utility_trailer.gltf",
+          color: 0xffa500, // Orange color for utility trailer
+          scale: { x: 5, y: 5, z: 5 }
+        },
+        {
+          elementId: "draggable-cone",
+          modelUrl: "/Cone.glb", // Placeholder URL, replace with actual model URL
+          color: 0x8b4513, // Brown color for cone
+          scale: { x: 3, y: 3, z: 3 }
         }
       ];
 
-      draggables.forEach(draggableInfo => {
-        const draggable = document.getElementById(draggableInfo.elementId);
+      draggables.forEach(({ elementId, modelUrl, color, scale }) => {
+        const draggable = document.getElementById(elementId);
 
         let wasFakeEvent = false;
-
         document.addEventListener("dragover", function (event) {
           event.preventDefault();
         });
@@ -157,7 +323,6 @@
           const canvas = document.querySelector(".mapboxgl-canvas");
 
           wasFakeEvent = true;
-
           const fakeevent = new MouseEvent("mouseup", {
             clientX: event.clientX,
             clientY: event.clientY,
@@ -172,9 +337,9 @@
 
           if (wasFakeEvent) {
             const options = {
-              obj: draggableInfo.modelUrl,
+              obj: modelUrl,
               type: "gltf",
-              scale: draggableInfo.scale,
+              scale: scale,
               units: "meters",
               rotation: { x: 90, y: 45, z: 0 },
             };
@@ -183,24 +348,71 @@
             const coords = map.unproject([x, y]);
             tb.loadObj(options, (model) => {
               model.setCoords([coords.lng, coords.lat]);
-
-              // Modify material properties for each mesh in the model
               model.traverse((node) => {
                 if (node.isMesh) {
                   node.material = new THREE.MeshStandardMaterial({
-                    color: draggableInfo.color, // Set the color based on the draggable
+                    color: color,
                     roughness: 0.5,
                     metalness: 0.5,
                   });
                 }
               });
-
               tb.add(model);
             });
             wasFakeEvent = false;
           }
         });
       });
+
+      document.getElementById('fly-button').addEventListener('click', () => {
+        const address = document.getElementById('address').value;
+        if (address) {
+          fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}`)
+            .then(response => response.json())
+            .then(data=> response.json())
+            .then(data => {
+              const [lng, lat] = data.features[0].center;
+              map.flyTo({ center: [lng, lat], essential: true, zoom: 16 });
+            });
+        }
+      });
+
+      // Map style buttons functionality
+      document.getElementById('satellite-button').addEventListener('click', () => {
+        map.setStyle('mapbox://styles/mapbox/satellite-v9');
+      });
+
+      document.getElementById('streets-button').addEventListener('click', () => {
+        map.setStyle('mapbox://styles/mapbox/streets-v11');
+      });
+
+      document.getElementById('dark-button').addEventListener('click', () => {
+        map.setStyle('mapbox://styles/mapbox/dark-v10');
+      });
+
+      // Add marker button functionality
+      document.getElementById('add-marker').addEventListener('click', () => {
+        // Toggle adding marker mode
+        addingMarker = !addingMarker;
+        if (addingMarker) {
+          document.getElementById('add-marker').style.backgroundColor = 'lightgreen';
+        } else {
+          document.getElementById('add-marker').style.backgroundColor = 'white';
+        }
+      });
+
+      // Event listener for map click to add marker
+      map.on('click', (event) => {
+        if (addingMarker) {
+          const lngLat = event.lngLat;
+          addMarker(lngLat.lng, lngLat.lat);
+          // Disable adding marker mode after adding marker
+          addingMarker = false;
+          document.getElementById('add-marker').style.backgroundColor = 'white';
+        }
+      });
     </script>
   </body>
 </html>
+
+
