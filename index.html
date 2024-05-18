@@ -1,3 +1,25 @@
+<br />
+<br />
+Exploring the Map:
+
+You can interact with the map by clicking and dragging to move around.
+Use the zoom controls on the map to zoom in and out.
+Adding 3D Models:
+
+On the left side of the map, you'll see draggable elements labeled "Truck", "Craft", "Washroom", "LSP", and "Cone".
+Click and drag any of these elements onto the map to add their corresponding 3D models at the dropped location.
+You can drag the 3D models around the map after placing them.
+Changing Map Styles:
+
+On the top right corner of the map, there are three buttons labeled "S", "T", and "D".
+Click these buttons to switch between different map styles: Satellite, Streets, and Dark mode, respectively.
+Flying to a Location:
+
+In the address bar at the top of the page, enter an address or postal code.
+Click the "Fly to" button to navigate to the entered location on the map.
+
+These instructions should help you navigate and utilize the features of the app effectively. Enjoy exploring and creating with the 3D map!
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -170,7 +192,7 @@
     <div id="draggable-truck" class="draggable" draggable="true">Truck</div>
     <div id="draggable-craft" class="draggable2" draggable="true">Craft</div>
     <div id="draggable-washroom" class="draggable3" draggable="true">Washroom</div>
-    <div id="draggable-utility" class="draggable4" draggable="true">LSP</div>
+    <div id="draggable-utility" class="draggable4" draggable="true">Utility</div>
     <div id="draggable-cone" class="draggable5" draggable="true">Cone</div>
     <!-- Map style buttons -->
     <div class="map-style-buttons">
@@ -202,36 +224,6 @@
           enableRotatingObjects: true,
         }
       ));
-
-      let addingMarker = false; // Flag to indicate if adding marker mode is active
-
-      // Function to add a marker
-      function addMarker(lng, lat) {
-        const marker = new mapboxgl.Marker()
-          .setLngLat([lng, lat])
-          .addTo(map);
-          
-        // Event listener to handle label when marker is clicked
-        marker.getElement().addEventListener('click', () => {
-          const label = prompt('Enter label for this marker:');
-          if (label) {
-            new mapboxgl.Popup()
-              .setLngLat(marker.getLngLat())
-              .setHTML(`<p>${label}</p>`)
-              .addTo(map);
-          }
-        });
-      }
-
-      // Toggle adding marker mode
-      document.getElementById('add-marker').addEventListener('click', () => {
-        addingMarker = !addingMarker;
-        if (addingMarker) {
-          document.getElementById('add-marker').style.backgroundColor = 'lightgreen';
-        } else {
-          document.getElementById('add-marker').style.backgroundColor = 'white';
-        }
-      });
 
       map.on("style.load", () => {
         map.addLayer({
@@ -369,7 +361,6 @@
         if (address) {
           fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}`)
             .then(response => response.json())
-            .then(data=> response.json())
             .then(data => {
               const [lng, lat] = data.features[0].center;
               map.flyTo({ center: [lng, lat], essential: true, zoom: 16 });
@@ -392,24 +383,10 @@
 
       // Add marker button functionality
       document.getElementById('add-marker').addEventListener('click', () => {
-        // Toggle adding marker mode
-        addingMarker = !addingMarker;
-        if (addingMarker) {
-          document.getElementById('add-marker').style.backgroundColor = 'lightgreen';
-        } else {
-          document.getElementById('add-marker').style.backgroundColor = 'white';
-        }
-      });
-
-      // Event listener for map click to add marker
-      map.on('click', (event) => {
-        if (addingMarker) {
-          const lngLat = event.lngLat;
-          addMarker(lngLat.lng, lngLat.lat);
-          // Disable adding marker mode after adding marker
-          addingMarker = false;
-          document.getElementById('add-marker').style.backgroundColor = 'white';
-        }
+        // Replace this with your marker adding logic
+        const marker = new mapboxgl.Marker()
+          .setLngLat([-73.97627, 40.75155])
+          .addTo(map);
       });
     </script>
   </body>
